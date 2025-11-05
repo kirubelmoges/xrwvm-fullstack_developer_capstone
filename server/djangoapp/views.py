@@ -13,8 +13,8 @@ from django.contrib.auth import login, authenticate
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
-from . import populate
-from .populate import initiate
+
+from .population import initiate
 
 
 from .models import CarMake, CarModel
