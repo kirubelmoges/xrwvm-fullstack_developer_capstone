@@ -56,45 +56,45 @@ app.get('/fetchReviews/dealer/:id', async (req, res) => {
   }
 });
 
+
 // Express route to fetch all dealerships
 app.get('/fetchDealers', async (req, res) => {
-    try {
-    res.status(200).json(dealerships);
+  try {
+    const documents = await Dealerships.find();
+    res.status(200).json(documents);
   } catch (err) {
     console.error("Error fetching dealers:", err);
     res.status(500).json({ error: "Error fetching dealers" });
   }
-app.get('/fetchDealers', (req, res) => {
+});
+
+//  Express route to fetch dealers by state
+app.get('/fetchDealers/:state', async (req, res) => {
   try {
-    res.status(200).json(dealerships);
-  } catch (err) {
-    console.error("Error fetching dealers:", err);
-
-try {
     const stateParam = req.params.state.toLowerCase();
-    const filtered = dealerships.filter(
-      d =>
-        d.state.toLowerCase() === stateParam ||
-        d.st.toLowerCase() === stateParam
-    );
+    const dealers = await Dealerships.find({
+      $or: [
+        { state: new RegExp(`^${stateParam}$`, 'i') },
+        { st: new RegExp(`^${stateParam}$`, 'i') }
+      ]
+    });
 
-    if (filtered.length === 0) {
+    if (dealers.length === 0) {
       return res.status(404).json({ message: "No dealers found for that state" });
     }
 
-    res.status(200).json(filtered);
+    res.status(200).json(dealers);
   } catch (err) {
-    console.error("Error filtering dealers:", err);
+    console.error("Error fetching dealers by state:", err);
     res.status(500).json({ error: "Error fetching dealers by state" });
-  }    on({ error: "Error fetching dealers" });
   }
 });
-});
 
-
-try {
+// Express route to fetch dealer by ID
+app.get('/fetchDealer/:id', async (req, res) => {
+  try {
     const id = parseInt(req.params.id);
-    const dealer = dealerships.find(d => d.id === id);
+    const dealer = await Dealerships.findOne({ id: id });
 
     if (!dealer) {
       return res.status(404).json({ message: "Dealer not found" });
@@ -104,14 +104,7 @@ try {
   } catch (err) {
     console.error("Error fetching dealer by ID:", err);
     res.status(500).json({ error: "Error fetching dealer by ID" });
-  }     tch Dealers by a particular state
-app.get('/fetchDealers/:state', async (req, res) => {
-//Write your code here
-});
-
-// Express route to fetch dealer by a particular id
-app.get('/fetchDealer/:id', async (req, res) => {
-//Write your code here
+  }
 });
 
 //Express route to insert review
